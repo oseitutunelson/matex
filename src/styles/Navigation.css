@@ -1,0 +1,27 @@
+.navigation{
+    margin: 2rem;
+    display: flex;
+}
+.navigation_logo h3{
+    font-weight: 600;
+    cursor: pointer;
+    color: blueviolet;
+}
+.navigation_buttons{
+    margin-left: auto;
+    display: flex;
+}
+.navigation_buttons button{
+    background-color: transparent;
+    border: none;
+    font-size: 1rem;
+    margin: 0 0.5rem;
+}
+.navigation_balance{
+    color: #fff;
+}
+.navigation_account{
+    cursor: pointer;
+    color: blueviolet;
+    font-size: 1.3rem;
+}
