@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter,Routes,Route} from 'react-router-dom';
 import App from './App'
-import { Creator } from './components/creator';
+import { Creator } from './components/Account';
 import EditProfile from './components/editProfile';
 
 
