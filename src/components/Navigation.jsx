@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import '../styles/Navigation.css'
 import {MdOutlineAccountCircle} from 'react-icons/md'
+import { Link } from 'react-router-dom';
+import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
+
 
 // 0. Setup queryClient
 const queryClient = new QueryClient()
@@ -43,6 +46,8 @@ createAppKit({
 })
 
 export function Navigation({ children }) {
+  const { address, isConnected } = useAppKitAccount()
+
   return (
     <WagmiProvider config={wagmiAdapter.wagmiConfig}>
         <div className='navigation'>
@@ -52,7 +57,7 @@ export function Navigation({ children }) {
             <div className='navigation_buttons'>
             <w3m-button/>
             <button className='navigation_balance'>0 MTX</button>
-            <button><MdOutlineAccountCircle className='navigation_account'/></button>
+            <Link to={`/creator/${address}`}> <button><MdOutlineAccountCircle className='navigation_account'/></button></Link>
             </div>
         </div>
         

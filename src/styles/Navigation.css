@@ -6,6 +6,7 @@
     font-weight: 600;
     cursor: pointer;
     color: blueviolet;
+    margin-top: 0.2rem;
 }
 .navigation_buttons{
     margin-left: auto;
@@ -24,4 +25,5 @@
     cursor: pointer;
     color: blueviolet;
     font-size: 1.3rem;
+    margin-top: 0.5rem;
 }
