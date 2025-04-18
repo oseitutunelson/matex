@@ -26,10 +26,14 @@ export const updateHashOnBlockchain = async (userNftHash) => {
 }
 
 export const fetchHashFromBlockchain = async (userAddress) =>{
+    if (!userAddress || !ethers.isAddress(userAddress)) {
+        console.error("Invalid user address provided:", userAddress);
+        return null;
+    }
     try {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
-        const contract = new ethers.Contract(contractAddress, contractAbi.abi, provider);
+        const contract = new ethers.Contract(contractAddress, contractAbi.abi, signer);
     
         const userHash = await contract.getUserNftHash(userAddress);
         console.log("Fetched user hash:", userHash);
@@ -46,7 +50,7 @@ export const fetchGlobalNftHash = async () =>{
 }
 
        const provider = new ethers.BrowserProvider(window.ethereum);
-       const contract = new ethers.Contract(contractAddress, contractAbi.abi, provider);
+       const contract = new ethers.Contract(contractAddress, contractAbi.abi, signer);
 
     try {
        const globalFeedHash = await contract.getAllNfts();

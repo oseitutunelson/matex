@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { fetchUserProfileHash } from './creatorContract';
 import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
 import {FaCamera} from 'react-icons/fa6'
+import { UserNfts } from './ContentPage';
 
 
 export const Creator = () => {
@@ -103,6 +104,7 @@ useEffect(() => {
           <div className='account_creator'>
           <Link to='/createcontent'>  <button className='account_button'>create content</button></Link>
           </div>
+          <UserNfts/>
         </div>
         </>
         

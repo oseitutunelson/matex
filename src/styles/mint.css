@@ -62,12 +62,24 @@ input[type="text"]{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 20px;
-    padding: 10px 20px;
+    padding: 10px 0px;
 }
 .mint_arrow{
     font-size: 30px;
     cursor: pointer;
     margin-bottom: 2rem;
+}
+.polygon{
+    width: 30px;
+    margin-top: 1rem;
+}
+.polygon_price{
+    font-size: 20px;
+    margin-left:0.5rem;
+    margin-top: 1.2rem;
+}
+.polygon_text{
+    display: flex;
 }
 .content-settings{
     margin-top: 6rem;
