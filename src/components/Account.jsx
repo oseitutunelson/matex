@@ -99,6 +99,11 @@ useEffect(() => {
           </div>
          
         </div>
+        <div className='account'>
+          <div className='account_creator'>
+          <Link to='/createcontent'>  <button className='account_button'>create content</button></Link>
+          </div>
+        </div>
         </>
         
     )

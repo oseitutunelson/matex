@@ -117,3 +117,14 @@
 .mint_arrow{
     font-size: 2rem;
 }
+.account{
+    margin: 2rem 1rem;
+}
+.account_button{
+    background-color: blueviolet;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 1rem;
+    border-radius: 30px;
+}
