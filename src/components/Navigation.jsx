@@ -141,8 +141,7 @@ useEffect(() =>{
             </div>
             <div className='navigation_buttons'>
             <div className='appkit_button'>
-            <w3m-network-button/>
-              <w3m-button/>
+           <w3m-button/>
             </div>
             <button className='navigation_balance'>{rewardBalance} MTX</button>
             <Link to={`/creator/${address}`}> <button><MdOutlineAccountCircle className='navigation_account'/></button></Link>
