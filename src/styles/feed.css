@@ -1,0 +1,153 @@
+.feed_container{
+    display: block;
+    width: 100%;
+    background-color: #000;
+    height: 100%;
+
+}
+.nft-feed h2{
+    margin: 2rem 2.3rem;
+    color: #fff;
+}
+.nft-cards p{
+  color: #fff;
+}
+  
+  .nft-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 10px 20px;
+  }
+  
+  .nft-card {
+    background-color: #000;
+    border-radius: 10px;
+    padding: 15px;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+    color: #fff;
+  }
+  .link_nft{
+    text-decoration: none;
+    color: #fff;
+  }
+  .link_nft2{
+    text-decoration: none;
+  }
+  .nft-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .nft-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+.link_nft{
+  text-decoration: none;
+}  
+.l_nft{
+  filter: blur(6px);
+}
+.nft-card video{
+  width: 100%;
+  height: 200px;
+  border: 2px solid #000;
+  object-fit: cover;
+}
+.subscriber{
+  display: flex;
+  width: 100%;
+  position: relative;
+}  
+.subscriber button{
+  background-color: blueviolet;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 5px;
+  position: absolute;
+  top: 35%;
+  right: 5%;
+}
+
+  
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .nft-cards {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .nft-cards {
+      grid-template-columns: 1fr;
+    }
+  
+    .nft-card {
+      padding: 10px;
+    }
+  
+    .nft-image {
+      height: 150px;
+    }
+  
+    h3 {
+      font-size: 1.1em;
+    }
+  
+    p {
+      font-size: 0.9em;
+    }
+  }
+.eth{
+  color: rgb(63, 11, 112);
+  font-size: 25px;
+  padding-top: 0.5rem;
+}  
+
+.pagination {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.pagination button {
+  color: #007BFF;
+  padding: 8px 16px;
+  text-decoration: none;
+  border: 1px solid #007BFF;
+  margin: 0 5px;
+  border-radius: 4px;
+  background-color: #000;
+  cursor: pointer;
+}
+
+.pagination button:hover {
+  background-color: #007BFF;
+  color: white;
+}
+
+.pagination .active {
+  background-color: #007BFF;
+  color: white;
+}
+#page-numbers {
+  margin-top: 20px;
+  font-size: 16px;
+}
+.buy_button{
+  color: #fff;
+  cursor: pointer;
+  background-color: blueviolet;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+}
+.eye_views{
+  padding-top: 1rem;
+  font-size: 30px;
+}

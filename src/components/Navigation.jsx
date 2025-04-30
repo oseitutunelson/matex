@@ -17,13 +17,13 @@ import rewardAbi from '../contracts/RewardToken.sol/RewardToken.json'
 const queryClient = new QueryClient()
 
 // 1. Get projectId from https://cloud.reown.com
-const projectId = '2adfca29ecc73c623bd3ed49c7b66ec7'
+const projectId = '28a69ef76c511498bac6f0d6b89093b5'
 
 // 2. Create a metadata object - optional
 const metadata = {
   name: 'matex',
   description: 'matex',
-  url: 'https://example.com', // origin must match your domain & subdomain
+  url: 'https://matex-two.vercel.app', // origin must match your domain & subdomain
   icons: ['https://avatars.githubusercontent.com/u/179229932']
 }
 
@@ -140,7 +140,10 @@ useEffect(() =>{
                 <h3>intimateX</h3>
             </div>
             <div className='navigation_buttons'>
-            <w3m-button/>
+            <div className='appkit_button'>
+            <w3m-network-button/>
+              <w3m-button/>
+            </div>
             <button className='navigation_balance'>{rewardBalance} MTX</button>
             <Link to={`/creator/${address}`}> <button><MdOutlineAccountCircle className='navigation_account'/></button></Link>
             </div>
