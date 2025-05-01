@@ -6,7 +6,9 @@ import { ethers } from "ethers";
 import truncateEthAddress from "truncate-eth-address";
 import { Link } from "react-router-dom";
 import { fetchGlobalNftHash } from "./userNftData";
- 
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 import { FaEthereum } from "react-icons/fa";
 import contractAbi from "../contracts/NFT.sol/Nft.json";
 import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
@@ -19,6 +21,8 @@ const contractAddress = "0x2E24c9f292AD62F89C5e3601D1425B9Ac8D82105";
 const NftFeed = () => {
   const [nftArray , setNftArray] = useState([]);
   const { address, isConnected } = useAppKitAccount()
+  const [loading, setLoading] = useState(true);
+
 
   const fetchUserContentFromIPFS = async () => {
     try {
@@ -141,7 +145,8 @@ useEffect(() => {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       }
       );
-      const fetchedFeed = response.data;
+      const fetchedFeed = response.data.filter(nft => nft.ImgHash); // Only keep NFTs with ImgHash
+
 
       // Step 2: Check access for each NFT
       if (window.ethereum) {
@@ -155,11 +160,11 @@ useEffect(() => {
           signer
         );
 
-        const limit = pLimit(5);
+        const limit = pLimit(3);
 
         const updatedFeed = await Promise.all(
           fetchedFeed.map((nft) =>
-            limit(async () => {
+          limit(async () => {
               try {
                 if (!nft.ImgHash) throw new Error("Missing ImgHash for NFT");
                 const hasAccess = await nftContract.checkAccess(
@@ -171,7 +176,7 @@ useEffect(() => {
                 console.error(`Error fetching data for ${nft.ImgHash}:`, viewError);
                 return { ...nft, views: 0 }; // Default to 0 views if error occurs
               }
-            })
+            } )
           )
         );
 
@@ -186,7 +191,9 @@ useEffect(() => {
     }
   };
 
-  loadFeedAndCheckAccess(); // Call the function inside useEffect
+  loadFeedAndCheckAccess(); 
+  setLoading(false)
+  // Call the function inside useEffect
 }, []); // Empty dependency array ensures it runs once on component mount
 
 
@@ -199,8 +206,16 @@ useEffect(() => {
         <div className="nft-feed">
           <h2>Feed</h2>
           <div className="nft-cards">
-            {nftArray.length === 0 ? (
-            <p>No posts yet.</p>
+            {nftArray.length === 0 || loading? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <div className="nft-card" key={i}>
+              <Skeleton height={200} />
+              <Skeleton width={`60%`} />
+              <Skeleton count={2} />
+              <Skeleton width={`30%`} height={20} />
+            </div>
+          ))
+            
           ) : (
             nftArray.map((nft, index) => (
               <div className="nft-card" key={index}>
@@ -262,9 +277,8 @@ useEffect(() => {
             
                   <h3>{nft.name}</h3>
                   <p>{nft.desc}</p>
-                  <p>
-                    Price : {nft.price} ETH <FaEthereum className="eth" />
-                  </p>
+                  <p className='polygon_text'><img src='/polygon-token.svg' className='polygon' /><span className='polygon_price'> {nft.price}</span></p>
+
                   <button className='buy_button' onClick={() => purchaseAccess(nft)}>Buy Access</button>
                 </div>
               )}
