@@ -102,9 +102,15 @@ const checkAccess = async (nft) => {
 };
  // Check access for each NFT
  const checkAccessForAllNfts = async () => {
-  const provider = new ethers.BrowserProvider(window.ethereum);
-  const signer = await provider.getSigner();
-  const nftContract = new ethers.Contract(contractAddress, contractAbi.abi, signer);
+  let provider;
+  if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
+    // Wallet is available
+    provider = new ethers.BrowserProvider(window.ethereum);
+  } else {
+    // No wallet, use public RPC (Infura, Alchemy, etc.)
+    provider = new ethers.JsonRpcProvider('https://rpc-amoy.polygon.technology/'); // or your preferred RPC
+  }  const signer = await provider.getSigner();
+  const nftContract = new ethers.Contract(contractAddress, contractAbi.abi, provider);
 
   const updatedNftFeed = await Promise.all(
     nftArray.map(async (nft) => {
@@ -164,23 +170,56 @@ const purchaseAccess = async (nft) => {
 useEffect(() => {
   const loadFeed = async () => {
     setLoading(true);
-  
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const nftContract = new ethers.Contract(contractAddress, contractAbi.abi, signer);
-      const address = await signer.getAddress();
 
+    try {
+      let provider;
+      let address = null;
+      let signerOrProvider;
+
+      if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
+        provider = new ethers.BrowserProvider(window.ethereum);
+
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts.length > 0) {
+            const signer = await provider.getSigner();
+            signerOrProvider = signer;
+            address = await signer.getAddress();
+          } else {
+            signerOrProvider = provider; // read-only
+          }
+        } catch (err) {
+          console.warn("User not connected or error getting signer:", err);
+          signerOrProvider = provider; // fallback to read-only
+        }
+      } else {
+        // Fallback to public RPC
+        provider = new ethers.JsonRpcProvider('https://rpc-amoy.polygon.technology/');
+        signerOrProvider = provider;
+      }
+
+      const nftContract = new ethers.Contract(contractAddress, contractAbi.abi, signerOrProvider);
       const metadatas = await nftContract.getAllNfts();
 
       const limit = pLimit(5);
-
       const enrichedFeed = await Promise.all(
-        metadatas.map((meta) =>
+        metadatas.map((meta, index) =>
           limit(async () => {
-            const hasAccess = await nftContract.checkAccess(meta.tokenId, address);
+            const tokenId = index; // Assumes index matches tokenId
+
+            let hasAccess = false;
+
+            // Only call checkAccess if address is available
+            if (address) {
+              try {
+                hasAccess = await nftContract.checkAccess(tokenId, address);
+              } catch (err) {
+                console.warn(`Error checking access for tokenId ${tokenId}:`, err);
+              }
+            }
+
             return {
-              tokenId: meta.tokenId,
+              tokenId,
               name: meta.name,
               desc: meta.description,
               ImgHash: meta.image,
@@ -202,11 +241,6 @@ useEffect(() => {
 
   loadFeed();
 }, []);
-
-
-
-
-
   return(
     <div>
        <div className="feed-container">
