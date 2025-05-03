@@ -60,7 +60,7 @@ export function Navigation({ children }) {
 
    //reward user for daily logins
    const handleReward = async (userAddress) =>{
-    if(!isConnected) throw Error('User disconnected');
+    //if(!isConnected) throw Error('User disconnected');
     try{
       const ethersProvider = new ethers.BrowserProvider(window.ethereum);
       const relayer = new ethers.Wallet(relayerPrivateKey,ethersProvider);
@@ -79,9 +79,9 @@ export function Navigation({ children }) {
 
 const checkRewardEligibility = async () => {
   try {
-      if(!isConnected){
-          console.log('Wallet not connected');
-      }
+      // if(!isConnected){
+      //     console.log('Wallet not connected');
+      // }
       const provider = new ethers.BrowserProvider(window.ethereum);
       const relayer = new ethers.Wallet(relayerPrivateKey,provider);
       const contract = new ethers.Contract(contractAddress, rewardAbi.abi, relayer);
@@ -103,10 +103,10 @@ const checkRewardEligibility = async () => {
   //get reward balance
   const getRewardBalance = async () => {
     try {
-        if (!isConnected) {
-            console.log("No wallet connected");
-            return; // Stop execution if no wallet is connected
-        }
+        // if (!isConnected) {
+        //     console.log("No wallet connected");
+        //     return; // Stop execution if no wallet is connected
+        // }
 
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
@@ -137,8 +137,7 @@ useEffect(() =>{
     <WagmiProvider config={wagmiAdapter.wagmiConfig}>
         <div className='navigation'>
             <div className='navigation_logo'>
-                <h3>intimateX</h3>
-            </div>
+            <Link to='/' className='app_link'><h3>intimateX</h3></Link>            </div>
             <div className='navigation_buttons'>
             <div className='appkit_button'>
            <w3m-button/>

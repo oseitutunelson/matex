@@ -5,7 +5,7 @@ import "../styles/feed.css";
 import { ethers } from "ethers";
 import truncateEthAddress from "truncate-eth-address";
 import { Link } from "react-router-dom";
-import { fetchGlobalNftHash } from "./userNftData";
+// import { fetchGlobalNftHash } from "./userNftData";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -16,30 +16,61 @@ import pLimit from 'p-limit';
 import { FaEye } from "react-icons/fa";
 
 
-const contractAddress = "0x2E24c9f292AD62F89C5e3601D1425B9Ac8D82105";
+const contractAddress = "0x6F3dCC409Aaa0019D225065225e3c38f64E9cc3B";
 
 const NftFeed = () => {
   const [nftArray , setNftArray] = useState([]);
   const { address, isConnected } = useAppKitAccount()
   const [loading, setLoading] = useState(true);
 
-
-  const fetchUserContentFromIPFS = async () => {
-    try {
-        // `userIpfsHash` is the IPFS hash where the user's array is stored
-        const savedNftHash = await fetchGlobalNftHash()
-        const userIpfsHash = savedNftHash; // This should be dynamically retrieved per user
-
-        const response = await axios.get(`https://gateway.pinata.cloud/ipfs/${userIpfsHash}`, {
-          crossdomain: true,
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
-        setNftArray(response.data); // Assuming the response data is the array of NFTs
-
-    } catch (error) {
-        console.log("Error fetching user's NFTs from IPFS:", error);
+  const getNftMetadata = async (tokenId) => {
+    if (!window.ethereum) {
+      alert("MetaMask is not installed!");
+      return null;
     }
-};
+  
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const nftContract = new ethers.Contract(
+      contractAddress,
+      contractAbi.abi,
+      signer
+    );
+  
+    try {
+      const [name, description, image, price, creator] = await nftContract.getNftMetadata(tokenId);
+      return {
+        tokenId,
+        name,
+        desc: description,
+        ImgHash: image, // or rename to 'image' if you prefer
+        price: Number(ethers.formatEther(price)), // convert to readable number
+        creator,
+      };
+    } catch (error) {
+      console.error(`Error fetching metadata for tokenId ${tokenId}:`, error);
+      return null;
+    }
+  };
+  
+
+
+//   const fetchUserContentFromIPFS = async () => {
+//     try {
+//         // `userIpfsHash` is the IPFS hash where the user's array is stored
+//         const savedNftHash = await fetchGlobalNftHash()
+//         const userIpfsHash = savedNftHash; // This should be dynamically retrieved per user
+
+//         const response = await axios.get(`https://gateway.pinata.cloud/ipfs/${userIpfsHash}`, {
+//           crossdomain: true,
+//           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+//       });
+//         setNftArray(response.data); // Assuming the response data is the array of NFTs
+
+//     } catch (error) {
+//         console.log("Error fetching user's NFTs from IPFS:", error);
+//     }
+// };
 
 const checkAccess = async (nft) => {
   const { tokenId } = nft;
@@ -131,70 +162,46 @@ const purchaseAccess = async (nft) => {
 };
 
 useEffect(() => {
-  const loadFeedAndCheckAccess = async () => {
+  const loadFeed = async () => {
+    setLoading(true);
+  
     try {
-      // Step 1: Fetch the NFT feed
-      const globalFeedHash = await fetchGlobalNftHash();
-      if (!globalFeedHash) return;
-      console.log(globalFeedHash)
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const nftContract = new ethers.Contract(contractAddress, contractAbi.abi, signer);
+      const address = await signer.getAddress();
 
-      const response = await axios.get(
-        `https://gateway.pinata.cloud/ipfs/${globalFeedHash}`,
-        {
-          crossdomain: true,
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }
-      );
-      const fetchedFeed = response.data.filter(nft => nft.ImgHash); // Only keep NFTs with ImgHash
+      const metadatas = await nftContract.getAllNfts();
 
+      const limit = pLimit(5);
 
-      // Step 2: Check access for each NFT
-      if (window.ethereum) {
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const nftContract = new ethers.Contract(
-          contractAddress,
-          contractAbi.abi,
-          signer
-        );
-
-        const limit = pLimit(3);
-
-        const updatedFeed = await Promise.all(
-          fetchedFeed.map((nft) =>
+      const enrichedFeed = await Promise.all(
+        metadatas.map((meta) =>
           limit(async () => {
-              try {
-                if (!nft.ImgHash) throw new Error("Missing ImgHash for NFT");
-                const hasAccess = await nftContract.checkAccess(
-                  nft.tokenId,
-                  await signer.getAddress()
-                );
-                return { ...nft, hasAccess}; // Add views to NFT object
-              } catch (viewError) {
-                console.error(`Error fetching data for ${nft.ImgHash}:`, viewError);
-                return { ...nft, views: 0 }; // Default to 0 views if error occurs
-              }
-            } )
-          )
-        );
+            const hasAccess = await nftContract.checkAccess(meta.tokenId, address);
+            return {
+              tokenId: meta.tokenId,
+              name: meta.name,
+              desc: meta.description,
+              ImgHash: meta.image,
+              price: Number(ethers.formatEther(meta.price)),
+              creator: meta.creator,
+              hasAccess,
+            };
+          })
+        )
+      );
 
-        // Update the state with the updated feed
-        setNftArray(updatedFeed);
-      } else {
-        alert("MetaMask is not installed!");
-        setNftArray(fetchedFeed); // Set the feed without access checks
-      }
+      setNftArray(enrichedFeed);
     } catch (error) {
-      console.error("Error loading feed or checking access:", error);
+      console.error("Error loading NFT feed from contract:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  loadFeedAndCheckAccess(); 
-  setLoading(false)
-  // Call the function inside useEffect
-}, []); // Empty dependency array ensures it runs once on component mount
+  loadFeed();
+}, []);
 
 
 
@@ -206,7 +213,7 @@ useEffect(() => {
         <div className="nft-feed">
           <h2>Feed</h2>
           <div className="nft-cards">
-            {nftArray.length === 0 || loading? (
+            {loading? (
           Array.from({ length: 6 }).map((_, i) => (
             <div className="nft-card" key={i}>
               <Skeleton height={200} />
@@ -237,7 +244,7 @@ useEffect(() => {
                       loop 
                     >
                       <source
-                        src={`https://emerald-fancy-gerbil-824.mypinata.cloud/ipfs/${nft.ImgHash}`}
+                        src={`https://emerald-fancy-gerbil-824.mypinata.cloud/${nft.ImgHash}`}
                         type="video/mp4"
                       />
                     </video>
@@ -265,7 +272,7 @@ useEffect(() => {
                      loop 
                     >
                       <source
-                        src={`https://emerald-fancy-gerbil-824.mypinata.cloud/ipfs/${nft.ImgHash}`}
+                        src={`https://emerald-fancy-gerbil-824.mypinata.cloud/${nft.ImgHash}`}
                         type="video/mp4"
                       />
                     </video>

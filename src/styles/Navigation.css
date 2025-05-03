@@ -8,6 +8,9 @@
     color: blueviolet;
     margin-top: 0.2rem;
 }
+.navigation_logo a{
+  text-decoration: none;
+}
 .navigation_buttons{
     margin-left: auto;
     display: flex;

@@ -2,7 +2,7 @@ import {useState, useEffect } from 'react';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import '../styles/mint.css';
-import { fetchHashFromBlockchain } from './userNftData';
+// import { fetchHashFromBlockchain } from './userNftData';
 import { useAppKitProvider, useAppKitAccount } from "@reown/appkit/react";
 import contractAbi from '../contracts/NFT.sol/Nft.json';
 
