@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { ethers, Contract} from 'ethers'
 
 import { WagmiProvider } from 'wagmi'
-import { arbitrum, mainnet ,polygonAmoy} from '@reown/appkit/networks'
+import { arbitrum, mainnet ,polygonAmoy,polygon} from '@reown/appkit/networks'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import '../styles/Navigation.css'
