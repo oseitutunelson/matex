@@ -12,7 +12,11 @@
 .nft-cards p{
   color: #fff;
 }
-  
+.blurred-video {
+  filter: blur(10px);
+  pointer-events: none;
+}
+
   .nft-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

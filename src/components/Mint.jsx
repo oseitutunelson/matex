@@ -16,9 +16,28 @@ export const MintNft = () => {
   const [price, setPrice] = useState(0);
   const [isOneTimePurchase, setIsOneTimePurchase] = useState(false);
   const [contentId, setContentId] = useState("");
+  const [maticPriceUSD, setMaticPriceUSD] = useState(null);
+
 
   const { address } = useAppKitAccount();
 
+  useEffect(() => {
+    const fetchMaticPrice = async () => {
+      try {
+        const res = await axios.get(
+          'https://api.coingecko.com/api/v3/simple/price?ids=matic-network&vs_currencies=usd'
+        );
+        setMaticPriceUSD(res.data['matic-network'].usd);
+        console.log(setMaticPriceUSD(res.data['matic-network'].usd))
+      } catch (err) {
+        console.error('Failed to fetch MATIC price:', err);
+      }
+    };
+  
+    fetchMaticPrice();
+  }, []);
+  
+  
   const getImageFromIPFS = async () => {
     if (!fileImg) return "";
     const formData = new FormData();
@@ -55,7 +74,7 @@ export const MintNft = () => {
         name,
         desc,
         image,
-        ethers.parseEther(price.toString()),
+        ethers.parseEther((price / maticPriceUSD).toFixed(18).toString())
        
       );
 
@@ -80,9 +99,12 @@ export const MintNft = () => {
         <input type="file" id='file-upload' onChange={(e) => setFileImg(e.target.files[0])} required />
         <input type="text" onChange={(e) => setName(e.target.value)} placeholder="name" required value={name} />
         <input type="text" onChange={(e) => setDesc(e.target.value)} placeholder="description" required value={desc} />
-        <label htmlFor='price' className='price'>Price (ETH)</label>
+        <label htmlFor='price' className='price'>Price (USD)</label>
         <input type="number" step="any" onChange={(e) => setPrice(e.target.value)} placeholder="0 = Free" required value={price} />
-         
+        {maticPriceUSD && (
+  <small>~ {(price / maticPriceUSD).toFixed(4)} MATIC</small>
+)}
+
         <button className="form_button" type="submit">Mint NFT</button>
         <p id="status"></p>
       </form>
