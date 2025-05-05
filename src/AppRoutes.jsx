@@ -4,7 +4,7 @@ import App from './App'
 import { Creator } from './components/Account';
 import EditProfile from './components/editProfile';
 import { MintNft } from './components/Mint';
-
+import NftDetail from './components/NftDetail';
  
 
 function AppRoutes() {
@@ -17,6 +17,7 @@ function AppRoutes() {
     <Route path="/creator/:walletAddress" element={<Creator/>} />
     <Route path="/editProfile/:walletAddress" element={<EditProfile/>}/>
     <Route path='/createcontent' element={<MintNft/>}/>
+    <Route path="/matex/:tokenId" element={<NftDetail />} />
   </Routes>
 </BrowserRouter>
     </>

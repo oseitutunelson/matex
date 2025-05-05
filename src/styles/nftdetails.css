@@ -1,0 +1,46 @@
+.nft-detail {
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 1rem;
+    font-family: Arial, sans-serif;
+    color: #fff;
+}
+  
+  .nft-detail h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
+  .nft-detail video {
+    width: 100%;
+    max-height: 540px;
+    border-radius: 10px;
+    background-color: #000;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  }
+  
+  .nft-detail p {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+    line-height: 1.5;
+  }
+  
+  .nft-detail strong {
+    color: #bbb;
+  }
+  
+  @media (max-width: 600px) {
+    .nft-detail {
+      padding: 0.5rem;
+    }
+  
+    .nft-detail h2 {
+      font-size: 1.4rem;
+    }
+  
+    .nft-detail p {
+      font-size: 0.95rem;
+    }
+  }
+  
