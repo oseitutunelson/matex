@@ -15,24 +15,51 @@ const NftFeed = () => {
 
   useEffect(() => {
     const fetchAccess = async () => {
-      if (!window.ethereum || !nfts.length) return;
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, nftArtifact.abi, signer);
-
       const map = {};
+  
+      // Convert string prices to numbers and set default access
       for (let nft of nfts) {
-        const hasAccess = await contract.checkAccess(nft.tokenId, address);
-        map[nft.tokenId] = hasAccess || nft.price === 0; 
+        const price = Number(nft.price);
+        if (price === 0) {
+          map[nft.tokenId] = true; // Free content = always accessible
+        } else {
+          map[nft.tokenId] = false; // Paid content = locked by default
+        }
       }
-      setAccessMap(map);
+  
+      if (!window.ethereum) {
+        console.log("No wallet: showing only free content");
+        setAccessMap(map);
+        return;
+      }
+  
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const address = await signer.getAddress();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, nftArtifact.abi, signer);
+  
+        for (let nft of nfts) {
+          const price = Number(nft.price);
+          if (price > 0) {
+            const hasAccess = await contract.checkAccess(nft.tokenId, address);
+            map[nft.tokenId] = hasAccess;
+          }
+        }
+  
+        setAccessMap(map);
+      } catch (err) {
+        console.error("Error checking access:", err);
+        setAccessMap(map);
+      }
     };
-
-    fetchAccess();
+  
+    if (nfts && nfts.length > 0) {
+      fetchAccess();
+    }
   }, [nfts]);
-
+  
+  
   const handleBuyAccess = async (nft) => {
     try {
       if (!window.ethereum) return alert("Connect wallet first");
@@ -60,7 +87,7 @@ const NftFeed = () => {
       <h2>Feed</h2>
 
       {loading ? (
-        <p className="feed_loading">Loading NFTs...</p>
+        <p className="feed_loading">Loading Content...</p>
       ) : (
         <div className="nft-cards">
           {nfts.map((nft) => {
@@ -69,6 +96,7 @@ const NftFeed = () => {
             return (
               <div key={nft.tokenId} className="nft-card">
                 <Link to={`/matex/${nft.tokenId}`} className="nft-video-link">
+                  <div>
                   <video
                     src={`https://gateway.pinata.cloud/ipfs/${nft.image}`}
                     muted
@@ -85,12 +113,15 @@ const NftFeed = () => {
                       }
                     }}
                     style={{
-                      filter: !hasAccess ? "blur(20px)" : "none",
+                      filter: accessMap[nft.tokenId] ? "none" : "blur(20px)",
                       pointerEvents: "none",
                       borderRadius: "12px",
                       width: "100%",
                     }}
+                    
+                    
                   />
+                  </div>
                 </Link>
 
                 <p><strong>Creator:</strong> {truncateEthAddress(nft.creator)}</p>
