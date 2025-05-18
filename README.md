@@ -1,12 +1,59 @@
-# React + Vite
+# 🔒 NFT Gated Content Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A decentralized content sharing platform where users can purchase access to token-gated videos minted as NFTs. Built with React, Solidity, Pinata IPFS, and Ethers.js, this platform allows creators to upload content, set pricing in MATIC, and manage access on-chain.
 
-Currently, two official plugins are available:
+🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+    🔐 Token-Gated Content: Videos are locked until purchased.
 
-## Expanding the ESLint configuration
+    🧾 Smart Contract Access Control: Users must own the NFT or pay the price to access.
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+    🎥 IPFS Video Hosting: Content is uploaded and served via Pinata + IPFS.
+
+    💳 MATIC Payment: Users purchase access using MATIC on the Polygon blockchain.
+
+    🧠 Access Check: Users who’ve already purchased won’t pay again.
+
+    📱 Responsive Frontend: Built with React for smooth UX.
+
+🧱 Smart Contract (Solidity)
+
+The contract allows:
+
+    Minting NFTs with associated IPFS content
+
+    Storing price and creator address
+
+    Managing access to content per user
+
+    Function checkAccess(tokenId, user) to verify access
+
+    Function purchaseNFT(tokenId) to allow MATIC payments and grant access
+
+🖼 Frontend (React.js)
+Key Pages:
+
+    Home: Displays a list of public NFTs with titles and thumbnails.
+
+    NFT Detail: Token-specific page that shows:
+
+        Blurred video if access is locked
+
+        Unlock button with pricing (in MATIC)
+
+        Full video if access is granted
+
+        Creator and description
+
+Tech Used:
+
+    ethers.js for wallet interaction
+
+    react-router for routing
+
+    @reown/appkit/react for wallet/account management
+
+    truncate-eth-address for address display
+
+    Pinata for storing video files on IPFS
+
